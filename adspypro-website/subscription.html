@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Subscription Plans</title>
+  <link rel="stylesheet" href="subscription.css" />
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <img class="logo" src="https://static.vecteezy.com/system/resources/previews/007/084/284/non_2x/spy-letter-logo-design-on-black-background-spy-creative-initials-letter-logo-concept-spy-letter-design-vector.jpg" alt="Logo" />
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="auth.html">Login</a></li>
+      <li><a href="signup.html">Sign Up</a></li>
+    </ul>
+  </nav>
+
+  <section class="subscription-section">
+    <h1>Choose Your Plan</h1>
+    <div class="pricing-container">
+      <!-- Basic Plan -->
+      <div class="pricing-card">
+        <h2>Basic</h2>
+        <p class="price">$19<span>/month</span></p>
+        <ul class="features">
+          <li>Ad scraping</li>
+          <li>Up to 100 searches</li>
+          <li>Email support</li>
+        </ul>
+        <div id="paypal-button-container-P-4HS48323WL085145VNABYCNI"></div>
+      </div>
+
+      <!-- Standard Plan -->
+      <div class="pricing-card">
+        <h2>Standard</h2>
+        <p class="price">$29<span>/month</span></p>
+        <ul class="features">
+          <li>Ad scraping + analytics</li>
+          <li>Up to 500 searches</li>
+          <li>Priority support</li>
+        </ul>
+        <button class="choose-btn">Coming Soon</button>
+      </div>
+
+      <!-- Premium Plan -->
+      <div class="pricing-card">
+        <h2>Premium</h2>
+        <p class="price">$49<span>/month</span></p>
+        <ul class="features">
+          <li>All features unlocked</li>
+          <li>Unlimited searches</li>
+          <li>24/7 support</li>
+        </ul>
+        <button class="choose-btn">Coming Soon</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PayPal SDK & Button -->
+  <script src="https://www.paypal.com/sdk/js?client-id=AesaZBSSv61cIZ4S9KaWKRwVffooUyzJr2mIhl8ykoqfSYrqwjPGRldOh_FcDLhUkhehNmT5bsi0InfG&vault=true&intent=subscription"></script>
+  <script>
+    paypal.Buttons({
+      style: { shape: 'rect', color: 'gold', layout: 'vertical', label: 'subscribe' },
+      createSubscription: (data, actions) => actions.subscription.create({ plan_id: 'P-4HS48323WL085145VNABYCNI' }),
+      onApprove: data => alert('Subscription successful! ID: ' + data.subscriptionID)
+    }).render('#paypal-button-container-P-4HS48323WL085145VNABYCNI');
+  </script>
+</body>
+</html>
