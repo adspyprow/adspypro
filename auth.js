@@ -1,43 +1,51 @@
-// Firebase configuration
-import { initializeApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-
+// Firebase config
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDQmb2oFPkP_t_nWbA6s7ae4bpE9-1oqFw",
+  authDomain: "adspypro-4ba71.firebaseapp.com",
+  projectId: "adspypro-4ba71",
+  storageBucket: "adspypro-4ba71.appspot.com",
+  messagingSenderId: "474193682492",
+  appId: "1:474193682492:web:ede50cac047755a7eba339",
+  measurementId: "G-W8GTLV1Z8Z"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 
-// Handle Sign Up
-const signupForm = document.getElementById("signup-form");
-signupForm.addEventListener("submit", (e) => {
-  e.preventDefault();
+function signup() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
-  createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      // Signed up successfully
-      const user = userCredential.user;
-      window.location.href = "subscription.html"; // Redirect after sign up
+
+  auth.createUserWithEmailAndPassword(email, password)
+    .then(() => {
+      window.location.href = "index.html";
     })
-    .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      alert(errorMessage);
+    .catch(error => {
+      document.getElementById("message").textContent = error.message;
     });
-});
+}
 
-// Handle Login
-const loginForm = document.getElementById("login-form");
-loginForm.addEventListener("submit", (e) => {
-  e.preventDefault();
+function login() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
-  signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential
+
+  auth.signInWithEmailAndPassword(email, password)
+    .then(() => {
+      window.location.href = "index.html";
+    })
+    .catch(error => {
+      document.getElementById("message").textContent = "Login failed: " + error.message;
+    });
+}
+
+function googleLogin() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider)
+    .then(() => {
+      window.location.href = "index.html";
+    })
+    .catch(error => {
+      document.getElementById("message").textContent = "Google login failed: " + error.message;
+    });
+}
