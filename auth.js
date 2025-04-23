@@ -1,41 +1,35 @@
-// Firebase config
-const firebaseConfig = {
-  apiKey: "AIzaSyDQmb2oFPkP_t_nWbA6s7ae4bpE9-1oqFw",
-  authDomain: "adspypro-4ba71.firebaseapp.com",
-  projectId: "adspypro-4ba71",
-  storageBucket: "adspypro-4ba71.appspot.com",
-  messagingSenderId: "474193682492",
-  appId: "1:474193682492:web:ede50cac047755a7eba339",
-  measurementId: "G-W8GTLV1Z8Z"
-};
+// auth.js
 
-// Initialize Firebase
+// Initialize Firebase (make sure firebase-config.js is loaded first)
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
+const messageDiv = document.getElementById('message');
+const emailInput = document.getElementById('email');
+const passwordInput = document.getElementById('password');
 
 function signup() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
+  const email = emailInput.value;
+  const password = passwordInput.value;
   auth.createUserWithEmailAndPassword(email, password)
     .then(() => {
-      window.location.href = "index.html";
+      // Redirect to your main dashboard
+      window.location.href = 'adspy.html';
     })
-    .catch(error => {
-      document.getElementById("message").textContent = error.message;
+    .catch(err => {
+      messageDiv.textContent = err.message;
     });
 }
 
 function login() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
+  const email = emailInput.value;
+  const password = passwordInput.value;
   auth.signInWithEmailAndPassword(email, password)
     .then(() => {
-      window.location.href = "index.html";
+      // Redirect to your main dashboard
+      window.location.href = 'adspy.html';
     })
-    .catch(error => {
-      document.getElementById("message").textContent = "Login failed: " + error.message;
+    .catch(err => {
+      messageDiv.textContent = 'Login failed: ' + err.message;
     });
 }
 
@@ -43,9 +37,10 @@ function googleLogin() {
   const provider = new firebase.auth.GoogleAuthProvider();
   auth.signInWithPopup(provider)
     .then(() => {
-      window.location.href = "index.html";
+      // Redirect to your main dashboard
+      window.location.href = 'adspy.html';
     })
-    .catch(error => {
-      document.getElementById("message").textContent = "Google login failed: " + error.message;
+    .catch(err => {
+      messageDiv.textContent = 'Google login failed: ' + err.message;
     });
 }
