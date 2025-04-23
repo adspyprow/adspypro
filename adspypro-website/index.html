@@ -1,80 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>AdSpyPro – Spy Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Inter', sans-serif; background: #f2f4f8; color: #333; }
-        nav { background: #0f172a; color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        nav .logo { font-weight: 700; font-size: 1.2rem; }
-        nav a { color: white; margin-left: 1.5rem; text-decoration: none; font-weight: 500; transition: color 0.3s; }
-        nav a:hover { color: #60a5fa; }
-        .container { max-width: 1200px; margin: 3rem auto; padding: 0 2rem; }
-        .search-bar { display: flex; gap: 1rem; margin-bottom: 2rem; animation: fadeIn 0.5s ease-in-out; }
-        .search-bar input, .search-bar select { flex: 1; padding: 0.9rem 1rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1rem; background: white; transition: all 0.3s ease; }
-        .search-bar input:focus, .search-bar select:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2); }
-        .search-bar button { padding: 0.9rem 1.5rem; background: #2563eb; color: white; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; font-weight: 600; transition: background 0.3s; }
-        .search-bar button:hover { background: #1e40af; }
-        #results { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; animation: fadeIn 0.5s ease-in-out; }
-        .ad-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.06); transition: transform 0.3s ease, box-shadow 0.3s ease; }
-        .ad-card:hover { transform: translateY(-5px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
-        .ad-card img { width: 100%; height: 180px; object-fit: cover; }
-        .ad-card .info { padding: 1rem; }
-        .ad-card .info p { margin-bottom: 0.5rem; font-size: 0.95rem; }
-        .meta { color: #6b7280; font-size: 0.85rem; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AdSpyPro - Discover Viral Ads</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f9fafb;
+      color: #1f2937;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .search-section {
+      background: white;
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+      margin-bottom: 2rem;
+      transition: all 0.3s ease;
+    }
+    .search-bar {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    input, select {
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      flex: 1;
+    }
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #1d4ed8;
+    }
+    #results {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1.5rem;
+      padding-top: 1rem;
+    }
+    .ad-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+      overflow: hidden;
+      transition: transform 0.3s ease;
+      cursor: pointer;
+    }
+    .ad-card:hover {
+      transform: translateY(-5px);
+    }
+    .ad-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+    .info {
+      padding: 1rem;
+      text-align: left;
+    }
+    .info p {
+      margin-bottom: 0.5rem;
+    }
+    .meta {
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+  </style>
 </head>
 <body>
-    <nav>
-        <div class="logo">AdSpyPro</div>
-        <div><a href="index.html">Home</a></div>
-    </nav>
-    <div class="container">
-        <div class="search-bar">
-            <input id="keyword" type="text" placeholder="Enter keyword…" />
-            <select id="platform">
-                <option value="tiktok">TikTok</option>
-                <option value="facebook">Facebook</option>
-            </select>
-            <button id="searchBtn">Search Ads</button>
-        </div>
-        <div id="results"></div>
+  <div class="container">
+    <h1>AdSpyPro 🔍</h1>
+    <div class="search-section">
+      <div class="search-bar">
+        <input type="text" id="keyword" placeholder="Enter a keyword (e.g., fitness, crypto)"/>
+        <select id="platform">
+          <option value="facebook">Facebook</option>
+          <option value="tiktok">TikTok</option>
+        </select>
+        <button id="searchBtn">Search</button>
+      </div>
     </div>
-    <script>
-        async function searchAds() {
-            const kw = encodeURIComponent(document.getElementById('keyword').value);
-            const pf = document.getElementById('platform').value;
-            const res = await fetch(`/api/ads?keyword=${kw}&platform=${pf}`);
-            try {
-                const ads = await res.json();
-                const container = document.getElementById('results');
-                container.innerHTML = ads.length ? ads.map(ad => `
-                    <div class="ad-card" onclick="showAdDetails('${ad.id}')">
-                        <img src="${ad.image}" />
-                        <div class="info">
-                            <p>${ad.text}</p>
-                            <p class="meta">👍 ${ad.likes}  •  🔁 ${ad.shares}</p>
-                        </div>
-                    </div>
-                `).join('') : '<p>No ads found.</p>';
-            } catch (e) {
-                document.getElementById('results').innerHTML = '<p>Error fetching ads.</p>';
-            }
-        }
+    <div id="results"></div>
+  </div>
 
-        function showAdDetails(adId) {
-            alert(`Displaying details for Ad ID: ${adId}`);
-            // Implement a custom page/section to show more details about the ad based on its ID.
-        }
+  <script>
+    async function searchAds() {
+      const keyword = encodeURIComponent(document.getElementById("keyword").value);
+      const platform = document.getElementById("platform").value;
+      const res = await fetch(`/api/ads?keyword=${keyword}&platform=${platform}`);
+      try {
+        const ads = await res.json();
+        const container = document.getElementById("results");
+        container.innerHTML = ads.length ? ads.map(ad => `
+          <div class="ad-card" onclick="alert('Clicked on ad: ${ad.id}')">
+            <img src="${ad.image}" alt="Ad Image">
+            <div class="info">
+              <p>${ad.text}</p>
+              <p class="meta">Likes: ${ad.likes} | Shares: ${ad.shares}</p>
+            </div>
+          </div>
+        `).join('') : '<p>No ads found.</p>';
+      } catch (e) {
+        document.getElementById("results").innerHTML = "<p>Error loading ads.</p>";
+      }
+    }
 
-        document.getElementById('searchBtn').addEventListener('click', searchAds);
-        document.getElementById('keyword').addEventListener('keydown', e => {
-            if (e.key === 'Enter') searchAds();
-        });
-    </script>
+    document.getElementById("searchBtn").addEventListener("click", searchAds);
+    document.getElementById("keyword").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") searchAds();
+    });
+  </script>
 </body>
 </html>
