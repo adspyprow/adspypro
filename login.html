@@ -1,31 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login</title>
-  <link rel="stylesheet" href="login.css" />
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Log In – AdSpyPro</title>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
+  <style>
+    body { display:flex; justify-content:center; align-items:center; height:100vh; background:#f3f4f6; margin:0; font-family:Arial,sans-serif; }
+    .card { background:white; padding:2rem; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.1); width:320px; text-align:center; }
+    h2 { margin-bottom:1rem; }
+    input { width:100%; padding:.8rem; margin:0.5rem 0; border:1px solid #ccc; border-radius:4px; }
+    button { width:100%; padding:.8rem; margin-top:1rem; background:#2563eb; color:#fff; border:none; border-radius:4px; cursor:pointer; }
+    button:hover { background:#1e40af; }
+    .google { background:#db4437; margin-top:.5rem; }
+    #error { color:red; margin-top:.5rem; font-size:.9rem; }
+    .switch { margin-top:1rem; font-size:.9rem; }
+  </style>
 </head>
 <body>
-  <div class="auth-container">
-    <div class="auth-box">
-      <div class="logo">
-        <img src="https://static.vecteezy.com/system/resources/previews/007/084/284/non_2x/spy-letter-logo-design-on-black-background-spy-creative-initials-letter-logo-concept-spy-letter-design-vector.jpg" alt="Logo" />
-      </div>
-      <h2>Welcome back</h2>
-      <form>
-        <input type="email" placeholder="Email" required />
-        <input type="password" placeholder="Password" required />
-        <button type="submit">Log In</button>
-      </form>
-      <div class="divider">or</div>
-      <button class="google-btn">
-        <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" />
-
-        Log in with Google
-      </button>
-      <p class="redirect-text">Don't have an account? <a href="signup.html">Sign up</a></p>
-    </div>
+  <div class="card">
+    <h2>Log In</h2>
+    <input id="email"    type="email"    placeholder="Email"/>
+    <input id="password" type="password" placeholder="Password"/>
+    <button id="login-btn">Log In</button>
+    <button id="google-btn" class="google">Continue with Google</button>
+    <div id="error"></div>
+    <p class="switch">
+      Don’t have an account? <a href="signup.html">Sign Up</a>
+    </p>
   </div>
+
+  <script>
+    // Firebase config
+    const cfg = {
+      apiKey: "AIzaSyDQmb2oFPkP_t_nWbA6s7ae4bpE9-1oqFw",
+      authDomain: "adspypro-4ba71.firebaseapp.com",
+      projectId: "adspypro-4ba71",
+      storageBucket: "adspypro-4ba71.appspot.com",
+      messagingSenderId: "474193682492",
+      appId: "1:474193682492:web:ede50cac047755a7eba339"
+    };
+    firebase.initializeApp(cfg);
+    const auth = firebase.auth();
+    const provider = new firebase.auth.GoogleAuthProvider();
+    const errEl = document.getElementById('error');
+
+    document.getElementById('login-btn').onclick = () => {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      errEl.style.color = 'red';
+      errEl.textContent = '';
+      if (!email || !password) {
+        errEl.textContent = 'Email & password required';
+        return;
+      }
+
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => {
+          errEl.style.color = 'green';
+          errEl.textContent = 'Logging in... Please wait';
+          setTimeout(() => {
+            window.location.href = 'adspy.html';
+          }, 4000);
+        })
+        .catch(e => { errEl.textContent = e.message; });
+    };
+
+    document.getElementById('google-btn').onclick = () => {
+      errEl.style.color = 'red';
+      errEl.textContent = '';
+      auth.signInWithPopup(provider)
+        .then(() => {
+          errEl.style.color = 'green';
+          errEl.textContent = 'Signing in with Google... Please wait';
+          setTimeout(() => {
+            window.location.href = 'adspy.html';
+          }, 4000);
+        })
+        .catch(e => { errEl.textContent = e.message; });
+    };
+  </script>
 </body>
 </html>
