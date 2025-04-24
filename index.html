@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AdSpyPro</title>
   <link rel="stylesheet" href="style.css" />
-  <!-- extra auth styles -->
+  <!-- extra auth styles (modal will no longer be triggered) -->
   <style>
-    /* Modal backdrop */
+    /* Modal backdrop (optional) */
     #auth-modal {
       position: fixed;
       top:0; left:0; right:0; bottom:0;
@@ -26,36 +26,23 @@
       box-shadow: 0 8px 24px rgba(0,0,0,0.2);
       text-align: center;
     }
-    #auth-card h2 {
-      margin-bottom: 1rem;
-      font-size: 1.5rem;
-    }
+    #auth-card h2 { margin-bottom: 1rem; font-size: 1.5rem; }
     #auth-card input {
-      width:100%;
-      margin:0.5rem 0;
-      padding:0.75rem;
-      border:1px solid #ccc;
-      border-radius:8px;
+      width:100%; margin:0.5rem 0; padding:0.75rem;
+      border:1px solid #ccc; border-radius:8px;
     }
     #auth-card button {
-      width:100%;
-      margin:0.75rem 0;
-      padding:0.75rem;
-      border:none;
-      border-radius:8px;
-      background:#2563eb;
-      color:white;
-      font-size:1rem;
-      cursor:pointer;
+      width:100%; margin:0.75rem 0; padding:0.75rem;
+      border:none; border-radius:8px;
+      background:#2563eb; color:white;
+      font-size:1rem; cursor:pointer;
       transition:background 0.3s;
     }
     #auth-card button:hover { background:#1e40af; }
     #auth-card .google-btn { background:#db4437; }
     #auth-card .switch {
-      background: none;
-      color: #2563eb;
-      border: none;
-      cursor: pointer;
+      background: none; color: #2563eb;
+      border: none; cursor: pointer;
       margin-top: 0.5rem;
     }
     #auth-error { color: red; margin-top: 0.5rem; font-size:0.9rem; }
@@ -76,51 +63,19 @@
     };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
-    const gp = new firebase.auth.GoogleAuthProvider();
+    const gp   = new firebase.auth.GoogleAuthProvider();
 
-    // Show/hide modal
-    function openAuth(mode) {
-      document.getElementById('auth-modal').style.display = 'flex';
-      document.getElementById('auth-header').textContent = mode === 'signup' ? 'Sign Up' : 'Log In';
-      document.getElementById('auth-submit').textContent = mode === 'signup' ? 'Sign Up' : 'Log In';
-      document.getElementById('auth-error').textContent = '';
-      document.getElementById('auth-email').value = '';
-      document.getElementById('auth-password').value = '';
-    }
-    function closeAuth() {
-      document.getElementById('auth-modal').style.display = 'none';
+    // Redirect helper (4s delay)
+    function redirectToDashboard() {
+      setTimeout(() => {
+        window.location.href = 'adspy.html';
+      }, 4000);
     }
 
-    // Handle form submit
-    function submitAuth() {
-      const mode = document.getElementById('auth-header').textContent === 'Sign Up' ? 'signup' : 'login';
-      const email = document.getElementById('auth-email').value;
-      const pass  = document.getElementById('auth-password').value;
-      const errEl = document.getElementById('auth-error');
+    // Submission functions (can be removed if using separate pages)
+    function submitAuth() { /* no-op: using separate pages */ }
+    function loginWithGoogle() { /* no-op: using separate pages */ }
 
-      if (!email || !pass) { errEl.textContent = 'Email & password required'; return; }
-
-      if (mode === 'signup') {
-        auth.createUserWithEmailAndPassword(email, pass)
-          .then(closeAuth)
-          .catch(e => errEl.textContent = e.message);
-      } else {
-        auth.signInWithEmailAndPassword(email, pass)
-          .then(closeAuth)
-          .catch(e => errEl.textContent = e.message);
-      }
-    }
-
-    function loginWithGoogle() {
-      auth.signInWithPopup(gp)
-        .then(closeAuth)
-        .catch(e => document.getElementById('auth-error').textContent = e.message);
-    }
-
-    // If user manually reloads page while signed in, close modal
-    auth.onAuthStateChanged(user => {
-      if (user) closeAuth();
-    });
   </script>
 </head>
 <body>
@@ -133,8 +88,8 @@
     </div>
     <nav class="nav-links">
       <a href="index.html">Home</a>
-      <a href="javascript:void(0)" onclick="openAuth('login')">Login</a>
-      <a href="javascript:void(0)" onclick="openAuth('signup')">Sign Up</a>
+      <a href="login.html">Login</a>
+      <a href="signup.html">Sign Up</a>
     </nav>
   </header>
 
@@ -142,7 +97,7 @@
   <section class="hero">
     <h1>Welcome to AdSpyPro</h1>
     <p>Start your journey to marketing success with our tools.</p>
-    <a href="javascript:void(0)" onclick="openAuth('signup')" class="cta-button">Get Started</a>
+    <a href="signup.html" class="cta-button">Get Started</a>
   </section>
 
   <!-- Features Section -->
@@ -164,7 +119,7 @@
     </div>
   </section>
 
-  <!-- Auth Modal -->
+  <!-- Auth Modal (kept but not triggered) -->
   <div id="auth-modal">
     <div id="auth-card">
       <h2 id="auth-header">Login</h2>
@@ -173,9 +128,6 @@
       <button id="auth-submit" onclick="submitAuth()">Log In</button>
       <button class="google-btn" onclick="loginWithGoogle()">Login with Google</button>
       <p id="auth-error"></p>
-      <button class="switch" onclick="openAuth(authHeader.textContent==='Login'?'signup':'login')">
-        <span id="auth-switch-text">Switch to Sign Up</span>
-      </button>
       <button class="switch" onclick="closeAuth()">Close</button>
     </div>
   </div>
