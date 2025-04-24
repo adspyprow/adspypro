@@ -3,21 +3,138 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AdSpyPro - Welcome</title>
+  <title>AdSpyPro</title>
   <link rel="stylesheet" href="style.css" />
+  <!-- extra auth styles -->
+  <style>
+    /* Modal backdrop */
+    #auth-modal {
+      position: fixed;
+      top:0; left:0; right:0; bottom:0;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    /* Modal card */
+    #auth-card {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      width: 320px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+    #auth-card h2 {
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+    #auth-card input {
+      width:100%;
+      margin:0.5rem 0;
+      padding:0.75rem;
+      border:1px solid #ccc;
+      border-radius:8px;
+    }
+    #auth-card button {
+      width:100%;
+      margin:0.75rem 0;
+      padding:0.75rem;
+      border:none;
+      border-radius:8px;
+      background:#2563eb;
+      color:white;
+      font-size:1rem;
+      cursor:pointer;
+      transition:background 0.3s;
+    }
+    #auth-card button:hover { background:#1e40af; }
+    #auth-card .google-btn { background:#db4437; }
+    #auth-card .switch {
+      background: none;
+      color: #2563eb;
+      border: none;
+      cursor: pointer;
+      margin-top: 0.5rem;
+    }
+    #auth-error { color: red; margin-top: 0.5rem; font-size:0.9rem; }
+  </style>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
+  <script>
+    // Initialize Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyDQmb2oFPkP_t_nWbA6s7ae4bpE9-1oqFw",
+      authDomain: "adspypro-4ba71.firebaseapp.com",
+      projectId: "adspypro-4ba71",
+      storageBucket: "adspypro-4ba71.appspot.com",
+      messagingSenderId: "474193682492",
+      appId: "1:474193682492:web:ede50cac047755a7eba339",
+      measurementId: "G-W8GTLV1Z8Z"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const gp = new firebase.auth.GoogleAuthProvider();
+
+    // Show/hide modal
+    function openAuth(mode) {
+      document.getElementById('auth-modal').style.display = 'flex';
+      document.getElementById('auth-header').textContent = mode === 'signup' ? 'Sign Up' : 'Log In';
+      document.getElementById('auth-submit').textContent = mode === 'signup' ? 'Sign Up' : 'Log In';
+      document.getElementById('auth-error').textContent = '';
+      document.getElementById('auth-email').value = '';
+      document.getElementById('auth-password').value = '';
+    }
+    function closeAuth() {
+      document.getElementById('auth-modal').style.display = 'none';
+    }
+
+    // Handle form submit
+    function submitAuth() {
+      const mode = document.getElementById('auth-header').textContent === 'Sign Up' ? 'signup' : 'login';
+      const email = document.getElementById('auth-email').value;
+      const pass  = document.getElementById('auth-password').value;
+      const errEl = document.getElementById('auth-error');
+
+      if (!email || !pass) { errEl.textContent = 'Email & password required'; return; }
+
+      if (mode === 'signup') {
+        auth.createUserWithEmailAndPassword(email, pass)
+          .then(closeAuth)
+          .catch(e => errEl.textContent = e.message);
+      } else {
+        auth.signInWithEmailAndPassword(email, pass)
+          .then(closeAuth)
+          .catch(e => errEl.textContent = e.message);
+      }
+    }
+
+    function loginWithGoogle() {
+      auth.signInWithPopup(gp)
+        .then(closeAuth)
+        .catch(e => document.getElementById('auth-error').textContent = e.message);
+    }
+
+    // If user manually reloads page while signed in, close modal
+    auth.onAuthStateChanged(user => {
+      if (user) closeAuth();
+    });
+  </script>
 </head>
 <body>
 
   <!-- Navbar -->
   <header class="navbar">
     <div class="logo">
-      <img src="https://static.vecteezy.com/system/resources/previews/007/084/284/non_2x/spy-letter-logo-design-on-black-background-spy-creative-initials-letter-logo-concept-spy-letter-design-vector.jpg" alt="AdSpyPro Logo">
+      <img src="https://static.vecteezy.com/system/resources/previews/007/084/284/non_2x/spy-letter-logo-design-on-black-background-spy-creative-initials-letter-logo-concept-spy-letter-design-vector.jpg" alt="Logo">
       <h2>AdSpyPro</h2>
     </div>
     <nav class="nav-links">
       <a href="index.html">Home</a>
-      <a href="login.html">Login</a>
-      <a href="signup.html">Sign Up</a>
+      <a href="javascript:void(0)" onclick="openAuth('login')">Login</a>
+      <a href="javascript:void(0)" onclick="openAuth('signup')">Sign Up</a>
     </nav>
   </header>
 
@@ -25,7 +142,7 @@
   <section class="hero">
     <h1>Welcome to AdSpyPro</h1>
     <p>Start your journey to marketing success with our tools.</p>
-    <a href="signup.html" class="cta-button">Get Started</a>
+    <a href="javascript:void(0)" onclick="openAuth('signup')" class="cta-button">Get Started</a>
   </section>
 
   <!-- Features Section -->
@@ -34,18 +151,34 @@
     <div class="feature-list">
       <div class="feature-card">
         <h3>Spy on Winning Products Instantly</h3>
-        <p>Discover top-selling products your competitors are hiding. Our smart system analyzes real-time dropshipping data, so you can find hot products before they go viral.</p>
+        <p>Discover top-selling products your competitors are hiding.</p>
       </div>
       <div class="feature-card">
         <h3>Advanced Store & Ad Tracking</h3>
-        <p>See what’s really working — uncover hidden stores, ads, and strategies used by 6-figure sellers. With one click, you’re inside their toolbox.</p>
+        <p>Uncover hidden stores and ads.</p>
       </div>
       <div class="feature-card">
         <h3>AI-Powered Product Research</h3>
-        <p>No more guessing. Our AI recommends profitable niches and low-competition winners, saving you hours of research and boosting your chances of success.</p>
+        <p>Our AI recommends profitable niches and products.</p>
       </div>
     </div>
   </section>
+
+  <!-- Auth Modal -->
+  <div id="auth-modal">
+    <div id="auth-card">
+      <h2 id="auth-header">Login</h2>
+      <input id="auth-email" type="email" placeholder="Email"><br>
+      <input id="auth-password" type="password" placeholder="Password"><br>
+      <button id="auth-submit" onclick="submitAuth()">Log In</button>
+      <button class="google-btn" onclick="loginWithGoogle()">Login with Google</button>
+      <p id="auth-error"></p>
+      <button class="switch" onclick="openAuth(authHeader.textContent==='Login'?'signup':'login')">
+        <span id="auth-switch-text">Switch to Sign Up</span>
+      </button>
+      <button class="switch" onclick="closeAuth()">Close</button>
+    </div>
+  </div>
 
 </body>
 </html>

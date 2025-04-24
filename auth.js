@@ -1,46 +1,49 @@
 // auth.js
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { auth } from './firebase-config';
 
-// Initialize Firebase (make sure firebase-config.js is loaded first)
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const messageDiv = document.getElementById('message');
-const emailInput = document.getElementById('email');
-const passwordInput = document.getElementById('password');
+// Sign up
+document.getElementById('signup-btn').addEventListener('click', () => {
+  const email = document.getElementById('signup-email').value;
+  const password = document.getElementById('signup-password').value;
 
-function signup() {
-  const email = emailInput.value;
-  const password = passwordInput.value;
-  auth.createUserWithEmailAndPassword(email, password)
-    .then(() => {
-      // Redirect to your main dashboard
-      window.location.href = 'adspy.html';
+  createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      // Successful signup, redirect to adspy.html
+      window.location.href = "adspy.html";
     })
-    .catch(err => {
-      messageDiv.textContent = err.message;
+    .catch((error) => {
+      console.error(error.message);
+      alert('Signup failed. Please try again.');
     });
-}
+});
 
-function login() {
-  const email = emailInput.value;
-  const password = passwordInput.value;
-  auth.signInWithEmailAndPassword(email, password)
-    .then(() => {
-      // Redirect to your main dashboard
-      window.location.href = 'adspy.html';
-    })
-    .catch(err => {
-      messageDiv.textContent = 'Login failed: ' + err.message;
-    });
-}
+// Login
+document.getElementById('login-btn').addEventListener('click', () => {
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
 
-function googleLogin() {
-  const provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider)
-    .then(() => {
-      // Redirect to your main dashboard
-      window.location.href = 'adspy.html';
+  signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      // Successful login, redirect to adspy.html
+      window.location.href = "adspy.html";
     })
-    .catch(err => {
-      messageDiv.textContent = 'Google login failed: ' + err.message;
+    .catch((error) => {
+      console.error(error.message);
+      alert('Login failed. Please try again.');
     });
-}
+});
+
+// Google login
+const provider = new GoogleAuthProvider();
+document.getElementById('google-login').addEventListener('click', () => {
+  signInWithPopup(auth, provider)
+    .then((result) => {
+      // Successful Google login, redirect to adspy.html
+      window.location.href = "adspy.html";
+    })
+    .catch((error) => {
+      console.error(error.message);
+      alert('Google login failed. Please try again.');
+    });
+});
