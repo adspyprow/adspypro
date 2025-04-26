@@ -10,7 +10,10 @@
     /* Modal backdrop (optional) */
     #auth-modal {
       position: fixed;
-      top:0; left:0; right:0; bottom:0;
+      top:0;
+      left:0;
+      right:0;
+      bottom:0;
       background: rgba(0,0,0,0.6);
       display: none;
       align-items: center;
@@ -26,26 +29,47 @@
       box-shadow: 0 8px 24px rgba(0,0,0,0.2);
       text-align: center;
     }
-    #auth-card h2 { margin-bottom: 1rem; font-size: 1.5rem; }
+    #auth-card h2 {
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
     #auth-card input {
-      width:100%; margin:0.5rem 0; padding:0.75rem;
-      border:1px solid #ccc; border-radius:8px;
+      width:100%;
+      margin:0.5rem 0;
+      padding:0.75rem;
+      border:1px solid #ccc;
+      border-radius:8px;
     }
     #auth-card button {
-      width:100%; margin:0.75rem 0; padding:0.75rem;
-      border:none; border-radius:8px;
-      background:#2563eb; color:white;
-      font-size:1rem; cursor:pointer;
+      width:100%;
+      margin:0.75rem 0;
+      padding:0.75rem;
+      border:none;
+      border-radius:8px;
+      background:#2563eb;
+      color:white;
+      font-size:1rem;
+      cursor:pointer;
       transition:background 0.3s;
     }
-    #auth-card button:hover { background:#1e40af; }
-    #auth-card .google-btn { background:#db4437; }
+    #auth-card button:hover {
+      background:#1e40af;
+    }
+    #auth-card .google-btn {
+      background:#db4437;
+    }
     #auth-card .switch {
-      background: none; color: #2563eb;
-      border: none; cursor: pointer;
+      background: none;
+      color: #2563eb;
+      border: none;
+      cursor: pointer;
       margin-top: 0.5rem;
     }
-    #auth-error { color: red; margin-top: 0.5rem; font-size:0.9rem; }
+    #auth-error {
+      color: red;
+      margin-top: 0.5rem;
+      font-size:0.9rem;
+    }
   </style>
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
@@ -61,11 +85,13 @@
       appId: "1:474193682492:web:ede50cac047755a7eba339",
       measurementId: "G-W8GTLV1Z8Z"
     };
+
+    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const gp = new firebase.auth.GoogleAuthProvider();
 
-    // Open auth modal
+    // Open auth modal function
     function openAuth(mode) {
       document.getElementById('auth-modal').style.display = 'flex';
       const header = document.getElementById('auth-header');
@@ -77,11 +103,12 @@
       document.getElementById('auth-password').value = '';
     }
 
+    // Close auth modal
     function closeAuth() {
       document.getElementById('auth-modal').style.display = 'none';
     }
 
-    // Handle submit
+    // Handle submit function for email/password
     function submitAuth() {
       const mode = document.getElementById('auth-header').textContent === 'Sign Up' ? 'signup' : 'login';
       const email = document.getElementById('auth-email').value;
@@ -97,25 +124,25 @@
         auth.createUserWithEmailAndPassword(email, pass)
           .then(() => {
             closeAuth();
-            window.location.href = 'adspy.html';
+            window.location.href = 'adspy.html'; // Redirect after successful signup
           })
           .catch(e => errEl.textContent = e.message);
       } else {
         auth.signInWithEmailAndPassword(email, pass)
           .then(() => {
             closeAuth();
-            window.location.href = 'adspy.html';
+            window.location.href = 'adspy.html'; // Redirect after successful login
           })
           .catch(e => errEl.textContent = e.message);
       }
     }
 
-    // Google login
+    // Google login function
     function loginWithGoogle() {
       auth.signInWithPopup(gp)
         .then(() => {
           closeAuth();
-          window.location.href = 'adspy.html';
+          window.location.href = 'adspy.html'; // Redirect after successful Google login
         })
         .catch(e => document.getElementById('auth-error').textContent = e.message);
     }
@@ -126,8 +153,8 @@
     });
   </script>
 </head>
-<body>
 
+<body>
   <!-- Navbar -->
   <header class="navbar">
     <div class="logo">
@@ -179,6 +206,5 @@
       <button class="switch" onclick="closeAuth()">Close</button>
     </div>
   </div>
-
 </body>
 </html>
