@@ -51,83 +51,79 @@
   <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
   <script>
-  
-  <script>
-  // Firebase config
-  const firebaseConfig = {
-    apiKey: "AIzaSyDQmb2oFPkP_t_nWbA6s7ae4bpE9-1oqFw",
-    authDomain: "adspypro-4ba71.firebaseapp.com",
-    projectId: "adspypro-4ba71",
-    storageBucket: "adspypro-4ba71.appspot.com",
-    messagingSenderId: "474193682492",
-    appId: "1:474193682492:web:ede50cac047755a7eba339",
-    measurementId: "G-W8GTLV1Z8Z"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const gp = new firebase.auth.GoogleAuthProvider();
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDQmb2oFPkP_t_nWbA6s7ae4bpE9-1oqFw",
+      authDomain: "adspypro-4ba71.firebaseapp.com",
+      projectId: "adspypro-4ba71",
+      storageBucket: "adspypro-4ba71.appspot.com",
+      messagingSenderId: "474193682492",
+      appId: "1:474193682492:web:ede50cac047755a7eba339",
+      measurementId: "G-W8GTLV1Z8Z"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const gp = new firebase.auth.GoogleAuthProvider();
 
-  // Open auth modal
-  function openAuth(mode) {
-    document.getElementById('auth-modal').style.display = 'flex';
-    const header = document.getElementById('auth-header');
-    const submitBtn = document.getElementById('auth-submit');
-    header.textContent = mode === 'signup' ? 'Sign Up' : 'Login';
-    submitBtn.textContent = mode === 'signup' ? 'Sign Up' : 'Login';
-    document.getElementById('auth-error').textContent = '';
-    document.getElementById('auth-email').value = '';
-    document.getElementById('auth-password').value = '';
-  }
-
-  function closeAuth() {
-    document.getElementById('auth-modal').style.display = 'none';
-  }
-
-  // Handle submit
-  function submitAuth() {
-    const mode = document.getElementById('auth-header').textContent === 'Sign Up' ? 'signup' : 'login';
-    const email = document.getElementById('auth-email').value;
-    const pass  = document.getElementById('auth-password').value;
-    const errEl = document.getElementById('auth-error');
-
-    if (!email || !pass) {
-      errEl.textContent = 'Email & password required';
-      return;
+    // Open auth modal
+    function openAuth(mode) {
+      document.getElementById('auth-modal').style.display = 'flex';
+      const header = document.getElementById('auth-header');
+      const submitBtn = document.getElementById('auth-submit');
+      header.textContent = mode === 'signup' ? 'Sign Up' : 'Login';
+      submitBtn.textContent = mode === 'signup' ? 'Sign Up' : 'Login';
+      document.getElementById('auth-error').textContent = '';
+      document.getElementById('auth-email').value = '';
+      document.getElementById('auth-password').value = '';
     }
 
-    if (mode === 'signup') {
-      auth.createUserWithEmailAndPassword(email, pass)
+    function closeAuth() {
+      document.getElementById('auth-modal').style.display = 'none';
+    }
+
+    // Handle submit
+    function submitAuth() {
+      const mode = document.getElementById('auth-header').textContent === 'Sign Up' ? 'signup' : 'login';
+      const email = document.getElementById('auth-email').value;
+      const pass  = document.getElementById('auth-password').value;
+      const errEl = document.getElementById('auth-error');
+
+      if (!email || !pass) {
+        errEl.textContent = 'Email & password required';
+        return;
+      }
+
+      if (mode === 'signup') {
+        auth.createUserWithEmailAndPassword(email, pass)
+          .then(() => {
+            closeAuth();
+            window.location.href = 'adspy.html';
+          })
+          .catch(e => errEl.textContent = e.message);
+      } else {
+        auth.signInWithEmailAndPassword(email, pass)
+          .then(() => {
+            closeAuth();
+            window.location.href = 'adspy.html';
+          })
+          .catch(e => errEl.textContent = e.message);
+      }
+    }
+
+    // Google login
+    function loginWithGoogle() {
+      auth.signInWithPopup(gp)
         .then(() => {
           closeAuth();
           window.location.href = 'adspy.html';
         })
-        .catch(e => errEl.textContent = e.message);
-    } else {
-      auth.signInWithEmailAndPassword(email, pass)
-        .then(() => {
-          closeAuth();
-          window.location.href = 'adspy.html';
-        })
-        .catch(e => errEl.textContent = e.message);
+        .catch(e => document.getElementById('auth-error').textContent = e.message);
     }
-  }
 
-  // Google login
-  function loginWithGoogle() {
-    auth.signInWithPopup(gp)
-      .then(() => {
-        closeAuth();
-        window.location.href = 'adspy.html';
-      })
-      .catch(e => document.getElementById('auth-error').textContent = e.message);
-  }
-
-  // Auto-close modal if already logged in
-  auth.onAuthStateChanged(user => {
-    if (user) closeAuth();
-  });
-</script>
-
+    // Auto-close modal if already logged in
+    auth.onAuthStateChanged(user => {
+      if (user) closeAuth();
+    });
   </script>
 </head>
 <body>
