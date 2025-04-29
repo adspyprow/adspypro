@@ -3,242 +3,517 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AdSpyPro - Ultimate Dropshipping Toolkit</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>AI Product Generator</title>
     <style>
-        /* ===== Base Styles ===== */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #0f172a; line-height: 1.6; }
-        
-        /* ===== Sidebar ===== */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --text-color: #2c3e50;
+            --light-bg: #ecf0f1;
+            --sidebar-width: 250px;
+            --sidebar-collapsed-width: 60px;
+            --transition-speed: 0.3s;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            display: flex;
+            min-height: 100vh;
+            background-color: var(--light-bg);
+            transition: margin-left var(--transition-speed);
+        }
+
         .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 240px;
-            height: 100vh;
-            background: #0f172a;
+            width: var(--sidebar-width);
+            background: var(--primary-color);
             color: white;
+            height: 100vh;
+            position: fixed;
+            transition: width var(--transition-speed);
+            overflow: hidden;
+            z-index: 100;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed-width);
+        }
+
+        .sidebar-header {
             padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            height: 70px;
         }
-        
-        .logo { font-size: 1.5rem; font-weight: 700; margin-bottom: 2rem; }
-        
-        .nav-button {
-            display: block;
-            width: 100%;
-            padding: 0.8rem 1rem;
-            margin-bottom: 0.5rem;
-            background: #1e293b;
-            color: #e2e8f0;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
+
+        .sidebar-header h3 {
+            white-space: nowrap;
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
         }
-        
-        .nav-button:hover { background: #475569; }
-        .nav-button.active { background: #2563eb; }
-        
-        /* ===== Main Content ===== */
-        .main-content {
-            margin-left: 240px;
-            padding: 2rem;
-        }
-        
-        .tool-section {
-            background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            margin-bottom: 2rem;
+
+        .sidebar.collapsed .sidebar-header h3 {
             display: none;
         }
-        
-        .tool-section.active { display: block; }
-        
-        input, textarea {
-            width: 100%;
-            padding: 0.8rem;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            font-size: 1rem;
-        }
-        
-        button.primary {
-            background: #2563eb;
-            color: white;
-            padding: 0.8rem 1.5rem;
+
+        .toggle-btn {
+            background: none;
             border: none;
-            border-radius: 8px;
+            color: white;
+            font-size: 1.5rem;
             cursor: pointer;
-            font-weight: 600;
-            transition: background 0.2s;
+            padding: 0.5rem;
+            transition: transform 0.2s;
         }
-        
-        button.primary:hover { background: #1d4ed8; }
-        
-        .result-box {
+
+        .toggle-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .sidebar-menu {
+            padding: 1rem 0;
+        }
+
+        .sidebar-menu li {
+            list-style: none;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .sidebar-menu li:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .sidebar-menu li i {
+            margin-right: 1rem;
+            font-size: 1.2rem;
+            min-width: 24px;
+        }
+
+        .sidebar.collapsed .sidebar-menu li span {
+            display: none;
+        }
+
+        .sidebar.collapsed .sidebar-menu li {
+            justify-content: center;
+            padding: 1.25rem 0;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+            transition: margin-left var(--transition-speed);
+        }
+
+        .sidebar.collapsed ~ .main-content {
+            margin-left: var(--sidebar-collapsed-width);
+        }
+
+        header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .generator-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
             margin-top: 1.5rem;
-            padding: 1.5rem;
-            background: #f1f5f9;
-            border-radius: 8px;
-            border: 1px dashed #cbd5e1;
         }
-        
-        .loader { color: #64748b; font-style: italic; }
-        .error { color: #dc2626; }
-        .success { color: #16a34a; }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card h2 {
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #bdc3c7;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 2px rgba(52,152,219,0.2);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        .btn-generate {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 1rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-generate:hover {
+            background: #c0392b;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(231,76,60,0.3);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0,0,0,0.1);
+            border-radius: 50%;
+            border-top: 4px solid var(--accent-color);
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .output-image {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-top: 1rem;
+            display: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        @media (max-width: 768px) {
+            .generator-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .sidebar.collapsed {
+                width: 100%;
+                height: 70px;
+            }
+
+            .sidebar.collapsed .sidebar-menu {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 1.75rem;
+            }
+        }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <!-- ===== Sidebar ===== -->
+    <!-- Sidebar -->
     <div class="sidebar">
-        <div class="logo">AdSpyPro</div>
-        <button class="nav-button active" data-tool="ad-spy">🔍 Ad Spy</button>
-        <button class="nav-button" data-tool="ai-desc">✍️ AI Descriptions</button>
-        <button class="nav-button" data-tool="ai-ad">🎬 AI Ad Creator</button>
+        <div class="sidebar-header">
+            <h3>AI Generator</h3>
+            <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+        </div>
+        <ul class="sidebar-menu">
+            <li onclick="showSection('product-desc')">
+                <i class="fas fa-align-left"></i>
+                <span>Product Description</span>
+            </li>
+            <li onclick="showSection('product-image')">
+                <i class="fas fa-image"></i>
+                <span>Product Image</span>
+            </li>
+        </ul>
     </div>
 
-    <!-- ===== Main Content ===== -->
+    <!-- Main Content -->
     <div class="main-content">
-        <!-- Ad Spy Tool -->
-        <div class="tool-section active" id="ad-spy">
-            <h2>Ad Spy Tool</h2>
-            <input type="text" placeholder="Enter product keyword..." id="searchKeyword">
-            <button class="primary" onclick="searchAds()">Search Ads</button>
-            <div id="adResults" class="result-box"></div>
+        <header>
+            <h1 id="section-title">AI Product Generator</h1>
+        </header>
+
+        <!-- Product Description Generator -->
+        <div id="product-desc" class="section-content">
+            <div class="generator-container">
+                <div class="card input-section">
+                    <h2>Product Details</h2>
+                    <div class="form-group">
+                        <label for="product-name">Product Name</label>
+                        <input type="text" id="product-name" placeholder="e.g., Premium Wireless Headphones">
+                    </div>
+                    <div class="form-group">
+                        <label for="product-category">Category</label>
+                        <select id="product-category">
+                            <option value="electronics">Electronics</option>
+                            <option value="fashion">Fashion</option>
+                            <option value="home">Home & Garden</option>
+                            <option value="beauty">Beauty</option>
+                            <option value="sports">Sports</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="key-features">Key Features</label>
+                        <input type="text" id="key-features" placeholder="Noise cancellation, 40hr battery, IPX7 waterproof">
+                    </div>
+                    <div class="form-group">
+                        <label for="tone">Writing Style</label>
+                        <select id="tone">
+                            <option value="professional">Professional</option>
+                            <option value="casual">Casual</option>
+                            <option value="persuasive">Persuasive</option>
+                            <option value="luxury">Luxury</option>
+                        </select>
+                    </div>
+                    <button class="btn-generate" onclick="generateDescription()">Generate Description</button>
+                </div>
+
+                <div class="card output-section">
+                    <h2>Generated Description</h2>
+                    <div class="loading" id="desc-loading">
+                        <div class="spinner"></div>
+                        <p>Generating product description...</p>
+                    </div>
+                    <textarea id="generated-description" readonly></textarea>
+                </div>
+            </div>
         </div>
 
-        <!-- AI Description Generator -->
-        <div class="tool-section" id="ai-desc">
-            <h2>AI Product Description Generator</h2>
-            <textarea id="productInput" rows="4" placeholder="Describe your product..."></textarea>
-            <button class="primary" onclick="generateDescription()">Generate Description</button>
-            <div id="descResult" class="result-box"></div>
-        </div>
+        <!-- Product Image Generator -->
+        <div id="product-image" class="section-content" style="display:none;">
+            <div class="generator-container">
+                <div class="card input-section">
+                    <h2>Image Settings</h2>
+                    <div class="form-group">
+                        <label for="image-prompt">Image Description</label>
+                        <textarea id="image-prompt" placeholder="Describe the image you want to generate"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="image-style">Art Style</label>
+                        <select id="image-style">
+                            <option value="realistic">Realistic</option>
+                            <option value="minimal">Minimalist</option>
+                            <option value="3d-render">3D Render</option>
+                            <option value="watercolor">Watercolor</option>
+                            <option value="cyberpunk">Cyberpunk</option>
+                        </select>
+                    </div>
+                    <button class="btn-generate" onclick="generateImage()">Generate Image</button>
+                </div>
 
-        <!-- AI Ad Creator -->
-        <div class="tool-section" id="ai-ad">
-            <h2>AI Ad Creator</h2>
-            <input type="text" id="productUrl" placeholder="Paste product URL">
-            <button class="primary" onclick="generateAd()">Create Ad</button>
-            <div id="adResult" class="result-box"></div>
+                <div class="card output-section">
+                    <h2>Generated Image</h2>
+                    <div class="loading" id="image-loading">
+                        <div class="spinner"></div>
+                        <p>Generating product image...</p>
+                    </div>
+                    <img id="generated-image" class="output-image" alt="AI Generated Product Image">
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // ===== Configuration =====
-        const OPENAI_API_KEY = "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"; // 🔴 WARNING: Exposed API key - revoke after testing!
+        const WORKER_URL = "https://7f930468.api-5t3.pages.dev";
 
-        // ===== Tool Navigation =====
-        document.querySelectorAll('.nav-button').forEach(button => {
-            button.addEventListener('click', () => {
-                document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
-                document.querySelectorAll('.tool-section').forEach(section => section.classList.remove('active'));
-                button.classList.add('active');
-                document.getElementById(button.dataset.tool).classList.add('active');
+        // UI Controls
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('collapsed');
+        }
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.style.display = 'none';
             });
+            document.getElementById(sectionId).style.display = 'block';
+            
+            const titles = {
+                'product-desc': 'Product Description Generator',
+                'product-image': 'Product Image Generator'
+            };
+            document.getElementById('section-title').textContent = titles[sectionId];
+            
+            if (window.innerWidth <= 768) {
+                document.querySelector('.sidebar').classList.add('collapsed');
+            }
+        }
+
+        // AI Generation Functions
+        async function generateDescription() {
+            const elements = {
+                name: document.getElementById('product-name'),
+                category: document.getElementById('product-category'),
+                features: document.getElementById('key-features'),
+                tone: document.getElementById('tone'),
+                loading: document.getElementById('desc-loading'),
+                output: document.getElementById('generated-description')
+            };
+
+            if (!elements.name.value.trim()) {
+                alert('Please enter a product name');
+                return;
+            }
+
+            elements.loading.style.display = 'block';
+            elements.output.value = '';
+
+            try {
+                const prompt = `Generate a ${elements.tone.value} product description for ${elements.name.value} in the ${elements.category.value} category. Key features: ${elements.features.value}. Create 3-5 compelling paragraphs for potential buyers.`;
+                
+                const response = await fetch(`${WORKER_URL}/text`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt })
+                });
+
+                if (!response.ok) throw new Error(`API Error: ${response.status}`);
+                const data = await response.json();
+                elements.output.value = data.choices[0].message.content;
+            } catch (error) {
+                elements.output.value = `Error: ${error.message}`;
+                console.error('Description Error:', error);
+            } finally {
+                elements.loading.style.display = 'none';
+            }
+        }
+
+        async function generateImage() {
+            const elements = {
+                prompt: document.getElementById('image-prompt'),
+                style: document.getElementById('image-style'),
+                loading: document.getElementById('image-loading'),
+                output: document.getElementById('generated-image')
+            };
+
+            if (!elements.prompt.value.trim()) {
+                alert('Please describe the image you want to generate');
+                return;
+            }
+
+            elements.loading.style.display = 'block';
+            elements.output.style.display = 'none';
+
+            try {
+                const fullPrompt = `${elements.prompt.value}, ${elements.style.value} style, high-quality product photo, clean background, professional lighting`;
+                
+                // Start generation
+                const startRes = await fetch(`${WORKER_URL}/image`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: fullPrompt })
+                });
+
+                if (!startRes.ok) throw new Error('Failed to start image generation');
+                const { id: predictionId } = await startRes.json();
+
+                // Check status
+                let imageUrl;
+                for (let i = 0; i < 20; i++) {
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    const checkRes = await fetch(`${WORKER_URL}/image-result`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ prediction_id: predictionId })
+                    });
+                    
+                    const result = await checkRes.json();
+                    if (result.status === 'succeeded') {
+                        imageUrl = result.output[0];
+                        break;
+                    } else if (result.status === 'failed') {
+                        throw new Error('Image generation failed');
+                    }
+                }
+
+                if (!imageUrl) throw new Error('Image generation timed out');
+                
+                elements.output.src = imageUrl;
+                elements.output.style.display = 'block';
+            } catch (error) {
+                alert(`Error: ${error.message}`);
+                console.error('Image Error:', error);
+            } finally {
+                elements.loading.style.display = 'none';
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.innerWidth <= 768) {
+                document.querySelector('.sidebar').classList.add('collapsed');
+            }
         });
 
-        // ===== AI Description Generator =====
-        async function generateDescription() {
-            const input = document.getElementById('productInput').value.trim();
-            const resultDiv = document.getElementById('descResult');
-            
-            if (!input) {
-                resultDiv.innerHTML = '<p class="error">Please enter product details</p>';
-                return;
+        window.addEventListener('resize', () => {
+            if (window.innerWidth <= 768) {
+                document.querySelector('.sidebar').classList.add('collapsed');
+            } else {
+                document.querySelector('.sidebar').classList.remove('collapsed');
             }
-
-            resultDiv.innerHTML = '<p class="loader">Generating AI description...</p>';
-
-            try {
-                const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${OPENAI_API_KEY}`
-                    },
-                    body: JSON.stringify({
-                        model: "gpt-4",
-                        messages: [{
-                            role: "user",
-                            content: `Create a compelling product description for dropshipping with emojis: ${input}`
-                        }]
-                    })
-                });
-
-                const data = await response.json();
-                const description = data.choices[0].message.content;
-                resultDiv.innerHTML = `
-                    <p class="success">${description}</p>
-                    <button class="primary" style="margin-top:1rem" 
-                            onclick="navigator.clipboard.writeText('${description.replace(/'/g, "\\'")}')">
-                        Copy Text
-                    </button>
-                `;
-            } catch (error) {
-                resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
-            }
-        }
-
-        // ===== AI Ad Creator =====
-        async function generateAd() {
-            const url = document.getElementById('productUrl').value.trim();
-            const resultDiv = document.getElementById('adResult');
-            
-            if (!url) {
-                resultDiv.innerHTML = '<p class="error">Please enter a product URL</p>';
-                return;
-            }
-
-            resultDiv.innerHTML = '<p class="loader">Generating AI ad creative...</p>';
-
-            try {
-                // Generate image
-                const response = await fetch('https://api.openai.com/v1/images/generations', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${OPENAI_API_KEY}`
-                    },
-                    body: JSON.stringify({
-                        prompt: `Modern social media ad for product at ${url}, vibrant colors, trending style`,
-                        model: "dall-e-3",
-                        n: 1,
-                        size: "1024x1024"
-                    })
-                });
-
-                const data = await response.json();
-                resultDiv.innerHTML = `
-                    <img src="${data.data[0].url}" style="max-width:100%; border-radius:8px;">
-                    <button class="primary" style="margin-top:1rem" 
-                            onclick="window.open('${data.data[0].url}')">
-                        Download Image
-                    </button>
-                `;
-            } catch (error) {
-                resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
-            }
-        }
-
-        // ===== Ad Spy Tool =====
-        async function searchAds() {
-            const keyword = document.getElementById('searchKeyword').value.trim();
-            const resultsDiv = document.getElementById('adResults');
-            
-            if (!keyword) {
-                resultsDiv.innerHTML = '<p class="error">Please enter a search keyword</p>';
-                return;
-            }
-
-            resultsDiv.innerHTML = '<p class="loader">Searching for ads...</p>';
-            
-            // Add your ad spy functionality here
-        }
+        });
     </script>
 </body>
 </html>
