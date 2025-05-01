@@ -1,102 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login – AdSpyPro</title>
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
+  <!-- Keep all previous head content the same -->
   <style>
-    body { display:flex; justify-content:center; align-items:center; height:100vh; background:#f3f4f6; margin:0; font-family:Arial,sans-serif; }
-    .card { background:white; padding:2rem; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.1); width:320px; text-align:center; }
-    h2 { margin-bottom:1rem; }
-    input { width:100%; padding:.8rem; margin:0.5rem 0; border:1px solid #ccc; border-radius:4px; }
-    button { width:100%; padding:.8rem; margin-top:1rem; background:#10b981; color:#fff; border:none; border-radius:4px; cursor:pointer; }
-    button:hover { background:#059669; }
-    .google { background:#db4437; margin-top:.5rem; }
-    #error { color:red; margin-top:.5rem; font-size:.9rem; }
-    .switch { margin-top:1rem; font-size:.9rem; }
+    /* Add this to existing styles */
+    .loading { opacity: 0.7; pointer-events: none; }
   </style>
 </head>
 <body>
   <div class="card">
     <h2>Login</h2>
-    <input id="email" type="email" placeholder="Email" />
-    <input id="password" type="password" placeholder="Password" />
+    <input id="email" type="email" placeholder="Email" autocomplete="email" />
+    <input id="password" type="password" placeholder="Password" autocomplete="current-password" />
     <button id="login-btn" type="button">Log In</button>
     <button id="google-btn" class="google">Continue with Google</button>
     <div id="error"></div>
     <p class="switch">
       Don't have an account? <a href="signup.html">Sign Up</a>
     </p>
+    <!-- Add password reset link -->
+    <p class="switch" style="margin-top: 0.5rem;">
+      <a href="reset-password.html">Forgot password?</a>
+    </p>
   </div>
 
   <script>
-    const cfg = {
-      apiKey: "AIzaSyDQmb2oFPkP_t_nWbA6s7ae4bpE9-1oqFw",
-      authDomain: "adspypro-4ba71.firebaseapp.com",
-      projectId: "adspypro-4ba71",
-      storageBucket: "adspypro-4ba71.appspot.com",
-      messagingSenderId: "474193682492",
-      appId: "1:474193682492:web:ede50cac047755a7eba339"
-    };
+    const cfg = { /* Your existing Firebase config */ };
     firebase.initializeApp(cfg);
     const auth = firebase.auth();
     const provider = new firebase.auth.GoogleAuthProvider();
     const errEl = document.getElementById('error');
+    const loginBtn = document.getElementById('login-btn');
 
-    document.getElementById('login-btn').onclick = () => {
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-      errEl.style.color = 'red';
-      errEl.textContent = '';
-      
-      // Validations
-      if (!email || !password) {
-        errEl.textContent = 'Email & password required';
-        return;
-      }
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        errEl.textContent = 'Invalid email format';
-        return;
-      }
-
-      auth.signInWithEmailAndPassword(email, password)
-        .then(() => {
-          document.getElementById('password').value = ''; // Clear password
-          errEl.style.color = 'green';
-          errEl.textContent = 'Login successful! Redirecting...';
-          setTimeout(() => {
-            window.location.href = 'adspy.html';
-          }, 1500);
-        })
-        .catch(e => {
-          const errors = {
-            'auth/user-not-found': 'Account not found',
-            'auth/wrong-password': 'Incorrect password',
-            'auth/invalid-credential': 'Invalid login credentials',
-            'auth/too-many-requests': 'Too many attempts - try later'
-          };
-          errEl.textContent = errors[e.code] || e.message;
-        });
+    const handleAuthError = (error) => {
+      const errors = {
+        'auth/invalid-credential': 'Invalid email or password',
+        'auth/user-not-found': 'Account not found - please sign up',
+        'auth/wrong-password': 'Incorrect password',
+        'auth/too-many-requests': 'Too many attempts - try again later or reset password',
+        'auth/user-disabled': 'Account disabled - contact support',
+        'auth/network-request-failed': 'Network error - check connection'
+      };
+      return errors[error.code] || error.message;
     };
 
-    document.getElementById('google-btn').onclick = () => {
+    document.getElementById('login-btn').onclick = async () => {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      
       errEl.style.color = 'red';
       errEl.textContent = '';
-      auth.signInWithPopup(provider)
-        .then(() => {
-          errEl.style.color = 'green';
-          errEl.textContent = 'Signing in with Google...';
+      loginBtn.classList.add('loading');
+
+      // Enhanced validation
+      if (!email || !password) {
+        errEl.textContent = 'Both fields are required';
+        loginBtn.classList.remove('loading');
+        return;
+      }
+      
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        errEl.textContent = 'Invalid email format';
+        loginBtn.classList.remove('loading');
+        return;
+      }
+
+      try {
+        await auth.signInWithEmailAndPassword(email, password);
+        document.getElementById('password').value = '';
+        errEl.style.color = 'green';
+        errEl.textContent = 'Login successful! Redirecting...';
+        setTimeout(() => window.location.href = 'adspy.html', 1200);
+      } catch (error) {
+        errEl.textContent = handleAuthError(error);
+        // Handle too-many-requests specifically
+        if (error.code === 'auth/too-many-requests') {
+          loginBtn.disabled = true;
           setTimeout(() => {
-            window.location.href = 'adspy.html';
-          }, 1500);
-        })
-        .catch(e => { 
-          errEl.textContent = e.message.includes("popup-closed") 
-            ? "Sign-in canceled" 
-            : e.message; 
-        });
+            loginBtn.disabled = false;
+            errEl.textContent = 'You can try again now';
+          }, 30000); // 30-second cooldown
+        }
+      } finally {
+        loginBtn.classList.remove('loading');
+      }
+    };
+
+    // Google sign-in with better error handling
+    document.getElementById('google-btn').onclick = async () => {
+      try {
+        await auth.signInWithPopup(provider);
+        window.location.href = 'adspy.html';
+      } catch (error) {
+        errEl.textContent = error.message.includes("popup-closed") 
+          ? "Sign-in canceled" 
+          : `Google login failed: ${error.message}`;
+      }
     };
   </script>
 </body>
